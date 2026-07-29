@@ -63,6 +63,7 @@ acceso al servidor**:
 | [06 — Equipo y roles](docs/06-equipo-y-roles.md) | Quién hace qué |
 | [07 — Roadmap](docs/07-roadmap.md) | Milestones y planificación |
 | [08 — Mapeo de requisitos](docs/08-mapeo-requisitos.md) | Trazabilidad consigna ↔ implementación |
+| [09 — Guía de Claude Code](docs/09-guia-claude-code.md) | Cómo usamos asistentes de IA para desarrollar, y con qué controles |
 | [ADRs](docs/adr/) | Decisiones de arquitectura y su justificación |
 
 ---
