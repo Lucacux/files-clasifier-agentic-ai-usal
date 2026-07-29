@@ -1,0 +1,49 @@
+name: 🐛 Bug
+description: Algo no funciona como debería.
+title: "[bug] "
+labels: ["type:bug"]
+body:
+  - type: textarea
+    id: que-pasa
+    attributes:
+      label: Qué pasa
+      description: Comportamiento observado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: que-deberia
+    attributes:
+      label: Qué debería pasar
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduccion
+    attributes:
+      label: Cómo reproducirlo
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: entorno
+    attributes:
+      label: Entorno
+      value: |
+        - Dónde: servidor / local
+        - SO y versión:
+        - Versión de Python:
+        - Commit:
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs relevantes
+      description: Salida de `journalctl -u archivistad` o del proceso en foreground.
+      render: shell

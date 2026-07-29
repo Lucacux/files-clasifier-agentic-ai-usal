@@ -1,0 +1,106 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "archivista"
+version = "0.1.0"
+description = "Sistema inteligente de organización de archivos basado en eventos del SO e IA local"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Luca Lombardo" },
+    { name = "Agustín Gil" },
+    { name = "Emma Tamborini" },
+    { name = "Zahira Dellosa" },
+    { name = "Ginés Casajona" },
+    { name = "Santiago Arriaga" },
+]
+classifiers = [
+    "Environment :: No Input/Output (Daemon)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "watchdog>=4.0",        # inotify
+    "pyyaml>=6.0",          # configuración
+    "pydantic>=2.6",        # validación del esquema de config y de la salida del modelo
+    "httpx>=0.27",          # cliente HTTP hacia el modelo local
+    "python-magic>=0.4.27", # detección de MIME por magic bytes
+]
+
+[project.optional-dependencies]
+extract = [
+    "pypdf>=4.0",           # texto de PDF
+    "python-docx>=1.1",     # texto de DOCX
+    "openpyxl>=3.1",        # metadatos de XLSX
+]
+dev = [
+    "archivista[extract]",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-timeout>=2.3",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "types-PyYAML",
+    "pre-commit>=3.7",
+]
+
+[project.scripts]
+archivista = "archivista.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Lucacux/files-clasifier-agentic-ai-usal"
+Documentation = "https://github.com/Lucacux/files-clasifier-agentic-ai-usal/tree/main/docs"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # pycodestyle
+    "F",        # pyflakes
+    "I",        # isort
+    "B",        # bugbear
+    "UP",       # pyupgrade
+    "C4",       # comprehensions
+    "SIM",      # simplify
+    "PTH",      # usar pathlib
+    "RET",      # returns
+    "ARG",      # argumentos sin usar
+    "S",        # bandit (seguridad)
+]
+ignore = [
+    "S101",  # assert: lo usamos en tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "ARG"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["magic.*", "watchdog.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+timeout = 60
+markers = [
+    "integration: tests que necesitan filesystem real o el daemon corriendo",
+    "requires_ai: tests que necesitan el modelo local disponible",
+]

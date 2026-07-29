@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Documentación del proyecto
+    url: https://github.com/Lucacux/files-clasifier-agentic-ai-usal/tree/main/docs
+    about: Arquitectura, decisiones (ADR), roadmap y guía del servidor.
+  - name: 🤝 Cómo trabajamos
+    url: https://github.com/Lucacux/files-clasifier-agentic-ai-usal/blob/main/CONTRIBUTING.md
+    about: Git flow, convenciones de commit y proceso de revisión.

@@ -1,0 +1,222 @@
+# ============================================================================
+#  Archivista — configuración de ejemplo
+#
+#  Copiar a /etc/archivista/archivista.yaml (servidor) o config/archivista.yaml
+#  (desarrollo local) y ajustar.
+#
+#  Cualquier valor puede sobreescribirse por variable de entorno con el prefijo
+#  ARCHIVISTA_ y separando niveles con doble guion bajo:
+#      ARCHIVISTA_PROFILE=profesor
+#      ARCHIVISTA_AI__TIMEOUT_SECONDS=45
+#
+#  El esquema completo y su validación son responsabilidad del módulo config/.
+#  Ver docs/01-arquitectura.md
+# ============================================================================
+
+# ---------------------------------------------------------------------------
+# Perfil activo: determina el árbol destino, las acciones extra que se generan
+# y qué tan conservador es el sistema. Ver docs/01-arquitectura.md §2.7
+#   estudiante | profesor
+# ---------------------------------------------------------------------------
+profile: estudiante
+
+# ---------------------------------------------------------------------------
+# Carpetas observadas mediante inotify.
+# El perfil global puede sobreescribirse por carpeta.
+# ---------------------------------------------------------------------------
+watch:
+  - path: /home/demo/Downloads
+    recursive: false
+
+  - path: /home/demo/Escritorio
+    recursive: false
+    # Esta carpeta concreta se organiza como material de clase,
+    # aunque el perfil global sea "estudiante".
+    profile: profesor
+
+# ---------------------------------------------------------------------------
+# Raíz bajo la cual el sistema organiza los archivos.
+# ---------------------------------------------------------------------------
+destination:
+  root: /home/demo/Documentos
+
+  # Whitelist de rutas donde el daemon tiene permitido escribir.
+  # Toda ruta se resuelve con realpath() y se valida contra esta lista:
+  # nada de '../..', nada de seguir symlinks fuera del sandbox.
+  allowed_roots:
+    - /home/demo/Documentos
+    - /home/demo/Downloads
+    - /home/demo/Escritorio
+
+  # Rutas que nunca se tocan, aunque estén dentro de allowed_roots.
+  never_touch:
+    - /home/demo/.ssh
+    - /home/demo/.config
+    - /home/demo/proyectos
+
+# ---------------------------------------------------------------------------
+# Detección de archivos
+# ---------------------------------------------------------------------------
+detection:
+  # Segundos que el tamaño y el mtime deben permanecer sin cambios antes de
+  # considerar que el archivo terminó de escribirse.
+  stability_window: 2.0
+
+  # Extensiones de archivos en tránsito: se ignoran siempre.
+  ignore_extensions: [".part", ".crdownload", ".tmp", ".swp", ".partial", "~"]
+
+  # Patrones glob ignorados.
+  ignore_patterns: [".*", "*.lock", "__pycache__/*"]
+
+  # Archivos por encima de este tamaño no se envían a la IA: se clasifican
+  # sólo por reglas (extraer texto de un archivo enorme no aporta y cuesta).
+  max_size_for_ai_mb: 50
+
+# ---------------------------------------------------------------------------
+# Concurrencia
+# ---------------------------------------------------------------------------
+concurrency:
+  # Hilos worker. El límite real no es la CPU sino la inferencia del modelo,
+  # que se serializa en Ollama. Subirlo mucho no acelera nada.
+  workers: 4
+
+  # Tamaño máximo de la cola de trabajo. Al llenarse, el watcher aplica
+  # contrapresión en lugar de acumular memoria sin límite.
+  queue_size: 1000
+
+  # Timeout por archivo. Superado, el trabajo se marca como fallido y se
+  # registra; nunca bloquea un worker indefinidamente.
+  per_file_timeout_seconds: 120
+
+# ---------------------------------------------------------------------------
+# Integración con el modelo local (Ollama)
+# ---------------------------------------------------------------------------
+ai:
+  enabled: true
+
+  endpoint: http://127.0.0.1:11434
+
+  # Modelo chico para clasificar: es una decisión corta, no necesita más.
+  model: qwen2.5:3b-instruct-q4_K_M
+
+  # Modelo grande para generar resúmenes: la calidad se nota y la latencia
+  # no molesta porque es asíncrono. Dejar vacío para usar el mismo de arriba.
+  summary_model: qwen2.5:7b-instruct-q4_K_M
+
+  timeout_seconds: 30
+  max_retries: 2
+  retry_backoff_seconds: 2.0
+
+  # Circuit breaker: tras N fallos consecutivos deja de intentar durante
+  # cooldown_seconds y degrada a clasificación por reglas, para no acumular
+  # latencia archivo tras archivo.
+  circuit_breaker:
+    failure_threshold: 5
+    cooldown_seconds: 300
+
+  # Por debajo de este umbral gana la decisión por reglas.
+  # El perfil puede sobreescribirlo.
+  min_confidence: 0.6
+
+  # Caracteres de texto extraído que se envían al modelo. El contexto cuesta
+  # tiempo de inferencia; el título y los primeros párrafos suelen alcanzar.
+  max_content_chars: 4000
+
+  # Caché de inferencias por SHA-256 del contenido: el mismo archivo nunca
+  # se infiere dos veces.
+  cache:
+    enabled: true
+    path: /var/lib/archivista/ai-cache.db
+    ttl_days: 90
+
+# ---------------------------------------------------------------------------
+# Comportamiento por perfil
+# ---------------------------------------------------------------------------
+profiles:
+  estudiante:
+    # Genera <archivo>.resumen.md junto a cada documento clasificado.
+    generate_summaries: true
+    summary_max_words: 200
+    min_confidence: 0.6
+    rename_files: true          # usa el nombre sugerido por el modelo
+    categories:
+      - Facultad
+      - Apuntes
+      - Trabajos Prácticos
+      - Bibliografía
+      - Personal
+
+  profesor:
+    generate_summaries: false
+    # Genera y mantiene un INDICE.md por carpeta de material.
+    generate_index: true
+    min_confidence: 0.75        # más conservador: prefiere reglas ante la duda
+    rename_files: true
+    rename_pattern: "{unidad}-{tema}-v{version}"
+    categories:
+      - Material de Clase
+      - Evaluaciones
+      - Planificación
+      - Investigación
+      - Administrativo
+
+# ---------------------------------------------------------------------------
+# Operaciones sobre el filesystem
+# ---------------------------------------------------------------------------
+filesystem:
+  # Conservar modo, propietario y mtime originales al mover.
+  preserve_permissions: true
+  preserve_ownership: true
+
+  # Qué hacer cuando el destino ya existe:
+  #   suffix  → agrega " (2)"
+  #   skip    → deja el archivo donde está
+  #   compare → si el hash coincide, propone borrar el duplicado
+  #             (propone: no borra — ver ADR-0005)
+  on_collision: compare
+
+  # Permisos de las carpetas que crea el sistema.
+  dir_mode: "0755"
+
+# ---------------------------------------------------------------------------
+# Operaciones destructivas
+#
+#   ⚠️  require_approval NO se puede poner en false.
+#   El sistema no ejecuta borrados automáticos por diseño. Ver ADR-0005.
+# ---------------------------------------------------------------------------
+destructive:
+  require_approval: true
+  queue_path: /var/lib/archivista/approvals.jsonl
+  # Las propuestas no resueltas se descartan (nunca se ejecutan) pasado este plazo.
+  expire_after_days: 30
+
+# ---------------------------------------------------------------------------
+# Observabilidad
+# ---------------------------------------------------------------------------
+logging:
+  level: INFO                   # DEBUG | INFO | WARNING | ERROR
+  operational_log: /var/log/archivista/archivistad.log
+
+  # Log de auditoría append-only: una línea JSON por operación sobre el
+  # filesystem. Es lo que habilita 'archivista undo'.
+  audit_log: /var/log/archivista/audit.jsonl
+
+  # La rotación real la hace logrotate (deploy/logrotate.conf).
+  max_size_mb: 100
+
+notifications:
+  # Notificaciones de escritorio. Degrada a log si no hay sesión gráfica,
+  # que es el caso en el servidor headless.
+  desktop: false
+  # Resumen periódico de actividad en el log operativo.
+  summary_interval_minutes: 60
+
+# ---------------------------------------------------------------------------
+# IPC — canal de control CLI ↔ daemon
+# ---------------------------------------------------------------------------
+ipc:
+  socket_path: /run/archivista/archivistad.sock
+  # El control de acceso al daemon es el permiso de este inodo:
+  # sólo el grupo 'archivista' puede darle órdenes. Ver ADR-0004.
+  socket_mode: "0660"
+  socket_group: archivista
