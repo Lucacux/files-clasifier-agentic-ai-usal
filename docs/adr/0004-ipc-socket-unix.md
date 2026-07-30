@@ -3,7 +3,7 @@
 - **Estado:** Aceptada
 - **Fecha:** 2026-07-29
 - **Decide:** Luca Lombardo (PM)
-- **Consultados:** Ginés Casajona
+- **Consultados:** Ginés Casajoana
 
 ## Contexto
 
