@@ -3,9 +3,9 @@
 #
 # El mapeo de áreas a personas está en docs/06-equipo-y-roles.md
 #
-# ⚠️ PENDIENTE: descomentar cada línea a medida que sumemos a cada integrante
-#    al repositorio y conozcamos su usuario de GitHub. Un usuario que no es
-#    colaborador del repo hace que GitHub ignore la línea en silencio.
+# ⚠️ Una línea que apunta a alguien que NO es colaborador del repositorio no da
+#    error: GitHub la ignora en silencio y nunca pide esa revisión. Cada línea
+#    empieza a funcionar recién cuando esa persona acepta la invitación.
 
 # Por defecto, revisa el PM
 *                           @Lucacux
@@ -16,23 +16,24 @@
 /src/archivista/fsops/      @Lucacux
 
 # Watcher, concurrencia y operaciones de filesystem
-# /src/archivista/watcher/    @usuario-agustin
-# /src/archivista/pipeline/   @usuario-agustin
+/src/archivista/watcher/    @AgustinGil
+/src/archivista/pipeline/   @AgustinGil
 
 # Capa de IA y extracción de contenido
-# /src/archivista/classify/   @usuario-emma
+/src/archivista/classify/   @EmmiTambo29
 
 # Perfiles y configuración
-# /src/archivista/profiles/   @usuario-zahira
-# /src/archivista/config/     @usuario-zahira
-# /config/                    @usuario-zahira
+/src/archivista/profiles/   @zahiiiDellosa
+/src/archivista/config/     @zahiiiDellosa
+/config/                    @zahiiiDellosa
 
 # Daemon, IPC y CLI
-# /src/archivista/ipc/        @usuario-gines
-# /src/archivista/cli.py      @usuario-gines
-# /src/archivista/daemon.py   @usuario-gines
+/src/archivista/ipc/        @casajoanait
+/src/archivista/cli.py      @casajoanait
+/src/archivista/daemon.py   @casajoanait
 
 # Observabilidad, CI y documentación de entrega
+# PENDIENTE: falta el usuario de GitHub de Santiago Arriaga (ver issue #40)
 # /src/archivista/observability/  @usuario-santiago
 # /.github/workflows/             @usuario-santiago
 

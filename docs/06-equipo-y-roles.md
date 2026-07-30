@@ -72,7 +72,7 @@ como atajo y como red de seguridad de la IA, y la generación de resúmenes (Est
 
 ---
 
-### Ginés Casajona — Daemon, IPC y CLI
+### Ginés Casajoana — Daemon, IPC y CLI
 
 **Área:** ciclo de vida del proceso, señales, socket Unix, línea de comandos, cola de aprobación
 **Conceptos de SO:** procesos, señales, IPC, permisos sobre el socket

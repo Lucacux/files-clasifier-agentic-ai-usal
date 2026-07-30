@@ -199,7 +199,7 @@ El perfil se define en config y puede sobreescribirse por carpeta observada.
 
 ### 2.9 Servidor IPC
 
-**Responsable:** Ginés Casajona · **Concepto de SO:** IPC, permisos de archivos
+**Responsable:** Ginés Casajoana · **Concepto de SO:** IPC, permisos de archivos
 
 Un socket de dominio Unix en `/run/archivista/archivistad.sock`, con permisos `0660` y grupo
 `archivista`: **el control de acceso al daemon es el propio permiso del inodo del socket**.
