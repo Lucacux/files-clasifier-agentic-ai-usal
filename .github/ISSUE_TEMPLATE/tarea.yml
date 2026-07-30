@@ -1,0 +1,58 @@
+name: 🛠️ Tarea
+description: Una unidad de trabajo del plan (funcionalidad, infraestructura, tooling).
+title: "[área] "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: Qué tiene que existir cuando esto esté terminado, y por qué hace falta.
+      placeholder: |
+        Al terminar esta tarea, el sistema debe poder...
+    validations:
+      required: true
+
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Condiciones verificables. Si no se puede comprobar, no es un criterio.
+      value: |
+        - [ ]
+        - [ ]
+        - [ ] Tiene tests que cubren el camino feliz y al menos un caso de error
+        - [ ] La documentación afectada está actualizada
+    validations:
+      required: true
+
+  - type: textarea
+    id: detalle
+    attributes:
+      label: Detalle técnico
+      description: Enfoque sugerido, archivos involucrados, casos borde a tener en cuenta.
+
+  - type: textarea
+    id: dependencias
+    attributes:
+      label: Dependencias
+      description: Qué issues tienen que estar listos antes, y qué issues dependen de este.
+      placeholder: |
+        Bloqueado por: #
+        Bloquea a: #
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - infra
+        - watcher
+        - ai
+        - profiles
+        - cli
+        - observability
+        - docs
+        - ci
+    validations:
+      required: true

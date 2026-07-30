@@ -1,0 +1,41 @@
+# Revisores por defecto según el área tocada.
+# GitHub pide automáticamente revisión a quien corresponda al abrir un PR.
+#
+# El mapeo de áreas a personas está en docs/06-equipo-y-roles.md
+#
+# ⚠️ PENDIENTE: descomentar cada línea a medida que sumemos a cada integrante
+#    al repositorio y conozcamos su usuario de GitHub. Un usuario que no es
+#    colaborador del repo hace que GitHub ignore la línea en silencio.
+
+# Por defecto, revisa el PM
+*                           @Lucacux
+
+# Infraestructura, despliegue y sistema operativo
+/deploy/                    @Lucacux
+/scripts/                   @Lucacux
+/src/archivista/fsops/      @Lucacux
+
+# Watcher, concurrencia y operaciones de filesystem
+# /src/archivista/watcher/    @usuario-agustin
+# /src/archivista/pipeline/   @usuario-agustin
+
+# Capa de IA y extracción de contenido
+# /src/archivista/classify/   @usuario-emma
+
+# Perfiles y configuración
+# /src/archivista/profiles/   @usuario-zahira
+# /src/archivista/config/     @usuario-zahira
+# /config/                    @usuario-zahira
+
+# Daemon, IPC y CLI
+# /src/archivista/ipc/        @usuario-gines
+# /src/archivista/cli.py      @usuario-gines
+# /src/archivista/daemon.py   @usuario-gines
+
+# Observabilidad, CI y documentación de entrega
+# /src/archivista/observability/  @usuario-santiago
+# /.github/workflows/             @usuario-santiago
+
+# La documentación de arquitectura y las decisiones las revisa el PM
+/docs/adr/                  @Lucacux
+/docs/01-arquitectura.md    @Lucacux

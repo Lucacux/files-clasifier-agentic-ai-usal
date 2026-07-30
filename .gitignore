@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Testing / tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Configuración local (nunca versionar: puede tener rutas personales)
+config/archivista.yaml
+.env
+*.local.yaml
+
+# Datos de ejecución
+*.log
+*.jsonl
+*.db
+/run/
+demo-workspace/
+
+# Editores
+.vscode/
+.idea/
+*.swp
