@@ -17,6 +17,7 @@ OpenAI?", la respuesta tiene que estar escrita, no en la memoria de quien lo dec
 | [0004](0004-ipc-socket-unix.md) | Socket de dominio Unix para la comunicación CLI ↔ daemon | Aceptada |
 | [0005](0005-borrado-con-aprobacion-humana.md) | Ninguna operación destructiva es automática | Aceptada |
 | [0006](0006-idiomas-del-proyecto.md) | Documentación en español, código en inglés | Aceptada |
+| [0007](0007-modelo-local-y-presupuesto-de-inferencia.md) | Qwen3.5 en dos niveles y presupuesto de inferencia explícito | Aceptada |
 
 ## Cuándo escribir uno
 
