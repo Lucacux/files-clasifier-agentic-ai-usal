@@ -55,7 +55,7 @@ def move_to_category(source: Path, category: str) -> Path:
             configured whitelist.
     """
     ...
-    logger.info("Archivo movido a %s", destination)   # lo lee el usuario
+    logger.info("Archivo movido a %s", destination)  # lo lee el usuario
 ```
 
 ## Consecuencias
