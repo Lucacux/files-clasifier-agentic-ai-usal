@@ -64,6 +64,7 @@ acceso al servidor**:
 | [07 — Roadmap](docs/07-roadmap.md) | Milestones y planificación |
 | [08 — Mapeo de requisitos](docs/08-mapeo-requisitos.md) | Trazabilidad consigna ↔ implementación |
 | [09 — Guía de Claude Code](docs/09-guia-claude-code.md) | Cómo usamos asistentes de IA para desarrollar, y con qué controles |
+| [10 — Runbook del servidor](docs/10-runbook-servidor.md) | Procedimiento para provisionar el servidor, paso por paso |
 | [ADRs](docs/adr/) | Decisiones de arquitectura y su justificación |
 
 ---
