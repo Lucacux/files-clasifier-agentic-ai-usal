@@ -96,12 +96,18 @@ ai:
 
   endpoint: http://127.0.0.1:11434
 
-  # Modelo chico para clasificar: es una decisión corta, no necesita más.
-  model: qwen2.5:3b-instruct-q4_K_M
+  # Nivel 1 — modelo chico para clasificar: es una decisión corta, no necesita
+  # más. Elección y presupuesto de tokens en docs/adr/0007.
+  model: qwen3.5:2b
 
-  # Modelo grande para generar resúmenes: la calidad se nota y la latencia
-  # no molesta porque es asíncrono. Dejar vacío para usar el mismo de arriba.
-  summary_model: qwen2.5:7b-instruct-q4_K_M
+  # Nivel 2 — modelo grande para generar resúmenes y para reintentar los casos
+  # de baja confianza: la calidad se nota y la latencia no molesta porque es
+  # asíncrono. Dejar vacío para usar el mismo de arriba.
+  summary_model: qwen3.5:4b
+
+  # Qwen3.5 razona por defecto y emite bloques <think>. En CPU los tokens de
+  # salida son la fase cara: para clasificar hay que apagarlo explícitamente.
+  think: false
 
   timeout_seconds: 30
   max_retries: 2
@@ -120,7 +126,17 @@ ai:
 
   # Caracteres de texto extraído que se envían al modelo. El contexto cuesta
   # tiempo de inferencia; el título y los primeros párrafos suelen alcanzar.
-  max_content_chars: 4000
+  # 1500 caracteres ≈ 450 tokens. En CPU, recortar la entrada ahorra más
+  # latencia que cambiar de modelo (docs/adr/0007).
+  max_content_chars: 1500
+
+  # Techos de la petición a Ollama. num_predict es el tope duro de la fase
+  # lenta: un Classification no necesita más de 128 tokens.
+  num_ctx: 2048
+  num_predict: 128
+
+  # Cuánto se queda el modelo cargado en RAM tras la última inferencia.
+  keep_alive: 5m
 
   # Caché de inferencias por SHA-256 del contenido: el mismo archivo nunca
   # se infiere dos veces.

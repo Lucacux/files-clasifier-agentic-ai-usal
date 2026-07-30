@@ -32,27 +32,49 @@ La decisión de fondo está en [ADR-0003](adr/0003-infraestructura-servidor.md).
 
 ## 3. Modelo de IA y presupuesto de recursos
 
-Corre en **Ollama**, como servicio local. Ver [ADR-0001](adr/0001-ia-local-con-ollama.md).
+Corre en **Ollama**, como servicio local. La elección de Ollama está en
+[ADR-0001](adr/0001-ia-local-con-ollama.md); la del modelo concreto y su presupuesto de tokens,
+en [ADR-0007](adr/0007-modelo-local-y-presupuesto-de-inferencia.md).
 
-### Modelos candidatos
+### Modelos elegidos
 
-| Modelo | Tamaño en disco | RAM en uso | Latencia estimada (CPU) | Uso |
+| Nivel | Modelo | En disco | RAM en uso | Uso |
 |---|---|---|---|---|
-| `qwen2.5:3b-instruct-q4_K_M` | ~2 GB | ~3 GB | ~1–3 s | **Por defecto**: clasificación |
-| `qwen2.5:7b-instruct-q4_K_M` | ~4,7 GB | ~6 GB | ~4–10 s | Resúmenes, casos difíciles |
-| `llama3.2:3b-instruct-q4_K_M` | ~2 GB | ~3 GB | ~1–3 s | Alternativa a evaluar |
+| 1 | `qwen3.5:2b` | ~2,7 GB | ~2,5 GiB | **Por defecto**: clasificación, ruta síncrona |
+| 2 | `qwen3.5:4b` | ~3,4 GB | ~3,5 GiB | Resúmenes, índices y casos de baja confianza |
+| opt-in | `qwen3.5:9b` | ~6 GB | ~6 GiB | Mejor redacción de resúmenes; 1–2 min por resumen en CPU |
+| escape | `granite4.1:3b` | ~2,1 GB | ~2,5 GiB | Reemplazo del nivel 1 si Qwen falla en salida estructurada |
+| degradado | `qwen3.5:0.8b` | ~1,1 GB | ~1,2 GiB | Sólo para el plan B de Oracle A1 |
 
-> ⚠️ Estos números son **estimaciones a validar**. Medirlos en el hardware real es
-> [el issue de benchmark](https://github.com/Lucacux/files-clasifier-agentic-ai-usal/issues) del milestone M0, y el resultado se documenta acá.
+### Presupuesto de inferencia
+
+En CPU la latencia se reparte entre *prefill* (digerir la entrada) y *decode* (emitir la
+salida), y el prefill de un texto largo cuesta más que cambiar de modelo. Por eso el techo se
+fija en tokens, no en "modelo chico":
+
+| Parámetro | Nivel 1 | Por qué |
+|---|---|---|
+| `think` | `false` | Clasificar es decidir, no razonar. Qwen3.5 razona por defecto: hay que apagarlo explícitamente |
+| `format` | JSON Schema de `Classification` | Ollama acepta un esquema completo, no sólo `"json"` |
+| `num_ctx` | 2048 | Techo, no aspiración |
+| `num_predict` | 128 | Tope duro de la fase lenta |
+| `max_content_chars` | 1500 (~450 tokens) | Nombre, ruta, MIME y primer párrafo son casi toda la señal |
+
+> ⚠️ Las cifras de RAM y las latencias siguen siendo **estimaciones**. Medirlas en el hardware
+> real es el [issue #3](https://github.com/Lucacux/files-clasifier-agentic-ai-usal/issues/3);
+> el protocolo y los umbrales de aceptación están al final de
+> [ADR-0007](adr/0007-modelo-local-y-presupuesto-de-inferencia.md). El resultado reemplaza esta
+> sección.
 
 ### Estrategia de dos niveles
 
 La clasificación es una tarea de decisión corta: el modelo chico alcanza y sobra. El modelo
 grande sólo se invoca cuando el perfil pide **generación de contenido** (resúmenes), donde la
-calidad sí se nota y la latencia no molesta porque es asíncrono.
+calidad sí se nota y la latencia no molesta porque es asíncrono, o cuando el nivel 1 devuelve
+una confianza por debajo del umbral.
 
-Presupuesto total en la laptop de 32 GiB: modelo cargado (≤ 6 GB) + daemon (≤ 200 MB) +
-sistema base (~1 GB) ≈ **menos de 8 GB**. Sobra muchísimo margen.
+Presupuesto total en la laptop de 32 GiB: modelo cargado (≤ 3,5 GiB) + daemon (≤ 200 MiB) +
+sistema base (~1 GiB) ≈ **menos de 5 GiB**. Sobra muchísimo margen.
 
 ### Contención de recursos
 
@@ -64,6 +86,8 @@ Para que el proyecto no vuelva inusable la máquina:
   haciendo.
 - `keep_alive` de Ollama configurado para descargar el modelo de RAM tras un período de
   inactividad.
+- `OLLAMA_MAX_LOADED_MODELS=1`: los dos niveles no conviven en RAM. El nivel 2 desaloja al 1,
+  que se recarga en la clasificación siguiente. Se cambia latencia por memoria acotada.
 
 ---
 
@@ -89,8 +113,9 @@ Costos a tener en cuenta:
 
 - Es **ARM (aarch64)**, no x86. Ollama tiene builds ARM, pero hay que verificar los paquetes
   Python de extracción de PDF/OOXML.
-- 4 OCPU ARM rinden bastante menos que un i9. Habría que asumir el modelo de 3B como único
-  y aceptar latencias mayores.
+- 4 OCPU ARM rinden bastante menos que un i9. Habría que quedarse sólo con el nivel 1
+  (`qwen3.5:2b`, o `qwen3.5:0.8b` si no llega), apagar la generación de resúmenes por
+  configuración y aceptar latencias mayores.
 - La disponibilidad del free tier de Oracle es notoriamente intermitente al crear la
   instancia.
 

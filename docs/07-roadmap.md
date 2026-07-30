@@ -167,7 +167,7 @@ benchmark del modelo se atrasan, se atrasa todo lo demás. Son los primeros issu
 
 | Riesgo | Impacto | Mitigación |
 |---|---|---|
-| El modelo local es demasiado lento en CPU | Alto | Benchmark **temprano** en M0; modelo de 3B por defecto; reglas resuelven el grueso de los casos sin IA |
+| El modelo local es demasiado lento en CPU | Alto | Benchmark **temprano** en M0; presupuesto de tokens acotado y modelo de 2B por defecto ([ADR-0007](adr/0007-modelo-local-y-presupuesto-de-inferencia.md)); reglas resuelven el grueso de los casos sin IA |
 | El servidor depende de una laptop encendida | Medio | Plan B en Oracle Cloud A1 evaluado en paralelo durante M0 |
 | El modelo devuelve JSON inválido o alucina categorías | Medio | Validación de esquema, umbral de confianza, fallback a reglas |
 | Condiciones de carrera difíciles de reproducir | Alto | Tests de integración con ráfagas de archivos desde M1; locks documentados en la arquitectura |
