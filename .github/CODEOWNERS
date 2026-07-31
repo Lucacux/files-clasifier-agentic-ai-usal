@@ -33,9 +33,8 @@
 /src/archivista/daemon.py   @casajoanait
 
 # Observabilidad, CI y documentación de entrega
-# PENDIENTE: falta el usuario de GitHub de Santiago Arriaga (ver issue #40)
-# /src/archivista/observability/  @usuario-santiago
-# /.github/workflows/             @usuario-santiago
+/src/archivista/observability/  @SantiagoAF312
+/.github/workflows/             @SantiagoAF312
 
 # La documentación de arquitectura y las decisiones las revisa el PM
 /docs/adr/                  @Lucacux
