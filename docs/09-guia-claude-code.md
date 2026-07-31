@@ -145,7 +145,91 @@ Empezá en modo plan. No escribas código hasta que valide el plan.
 
 ## 5. Prompts listos por área
 
-Uno por persona, para su primer issue. Sirven de molde para los demás.
+Uno por persona. Sirven de molde para los demás.
+
+Ojo con el orden: los tres issues de arranque de M0 (#6, #3 y #7) son **contratos y medición**,
+no implementación, y por eso tienen prompts distintos. Están primero. Los prompts por área que
+vienen después son para el issue siguiente de cada uno.
+
+### 5.1 Los tres de arranque
+
+#### ⚙️ Agustín — Contratos de datos (#6)
+
+```
+Entrá en modo plan para el issue #6 (contratos de datos entre módulos).
+
+Esto no es implementar: es definir las estructuras que van a usar cinco
+personas más. Lo que importa es que sean estables, no que sean completas.
+Si dudás entre agregar un campo ahora o después, no lo agregues: sumar un
+campo opcional más adelante no rompe a nadie, cambiarle el tipo sí.
+
+Leé antes:
+- docs/01-arquitectura.md (flujo de datos)
+- docs/06-equipo-y-roles.md, tabla de contratos: FileEvent y FsOperation son
+  tuyos; Classification es de Zahira y el log de auditoría de Santiago
+
+Para cada contrato quiero en el plan:
+- los campos con su tipo, y para cada uno: quién lo escribe y quién lo lee
+- qué es obligatorio y qué opcional, con el criterio
+- cómo se serializa (van a cruzar el socket Unix y el log JSONL)
+- un ejemplo concreto de cada uno, con valores reales
+
+Usá dataclasses o pydantic, pero decidilo en el plan y justificalo: los
+consumidores son el pipeline, el CLI y el log de auditoría.
+
+No implementes el watcher acá: es el issue #9.
+```
+
+#### 🤖 Emma — Benchmark del modelo (#3)
+
+```
+Ayudame con el issue #3 (instalar el modelo local y medir la latencia real).
+
+Antes que nada leé docs/adr/0007-modelo-local-y-presupuesto-de-inferencia.md:
+la sección final tiene el protocolo de medición y los umbrales de aceptación.
+Este issue no es "probar modelos": es confirmar o refutar esa ADR con números.
+
+Lo que necesito de vos, en este orden:
+1. un script reproducible (scripts/benchmark-modelo.py) que corra el protocolo
+   completo contra un endpoint de Ollama y escriba los resultados en CSV
+2. que separe prefill de decode usando los campos que devuelve Ollama:
+   prompt_eval_count, prompt_eval_duration, eval_count, eval_duration
+3. que compare think=true contra think=false, y max_content_chars 1500 contra
+   4000: son las dos variables que la ADR afirma que dominan la latencia
+4. que valide cada respuesta contra un esquema JSON y cuente los fallos
+
+El corpus lo armo yo con archivos reales; el script recibe un directorio y un
+CSV de categorías esperadas.
+
+No implementes el cliente de producción acá: es el issue #17. Este script es
+una herramienta de medición y puede ser todo lo feo que haga falta, pero los
+números tienen que ser correctos.
+```
+
+#### 📊 Santiago — CI y protección de rama (#7)
+
+```
+Implementá el issue #7 (endurecer el CI y proteger la rama main).
+
+Leé .github/workflows/ci.yml: ya existe y corre formato, linter, tipos, tests,
+shellcheck y un verificador de enlaces internos. No lo reescribas, endurecelo.
+
+Lo que quiero:
+- caché de dependencias que funcione de verdad (hoy la clave es 'pip' a secas)
+- umbral mínimo de cobertura, que falle el job si baja
+- el job de shellcheck ya no puede ser opcional: hay scripts en scripts/
+- separar lo que corre en cada PR de lo que corre sólo en main, si algo tarda
+
+Sobre la protección de main, decidilo y explicámelo antes de tocar nada:
+GitHub tiene branch protection clásica y rulesets, y en repos privados de
+cuentas gratuitas puede que ninguna de las dos esté disponible. Averigualo
+primero y, si no está disponible, escribí en el issue cuál es el plan B (por
+ejemplo CODEOWNERS + acuerdo del equipo) en lugar de dejarlo a medias.
+
+Empezá en modo plan.
+```
+
+### 5.2 Por área
 
 ### 🔧 Luca — Sandbox de rutas (#16)
 

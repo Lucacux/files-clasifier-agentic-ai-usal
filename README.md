@@ -161,7 +161,7 @@ Instrucciones en [`docs/05-acceso-profesor.md`](docs/05-acceso-profesor.md).
 | Agustín Gil | Watcher inotify, concurrencia y operaciones de filesystem |
 | Emma Tamborini | Capa de IA: modelo local, prompts, extracción de contenido |
 | Zahira Dellosa | Perfiles de usuario, configuración y generación de contenido |
-| Ginés Casajona | Daemon, IPC y CLI de control |
+| Ginés Casajoana | Daemon, IPC y CLI de control |
 | Santiago Arriaga | Observabilidad, CI/CD, testing y documentación de entrega |
 
 Detalle en [`docs/06-equipo-y-roles.md`](docs/06-equipo-y-roles.md).
