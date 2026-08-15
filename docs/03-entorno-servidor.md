@@ -179,15 +179,17 @@ El detalle de lo que puede y no puede hacer el profesor está en
 
 ## 7. Instalación
 
-> El script de bootstrap y la guía reproducible paso a paso son entregables de los issues de
-> infraestructura (milestone M0 y M4). Esta sección se completa con los comandos reales
-> verificados en el servidor.
+> El procedimiento operativo completo —incluidos los pasos manuales que ningún script puede
+> hacer— está en [`10-runbook-servidor.md`](10-runbook-servidor.md). Esta sección se completa
+> con los comandos reales verificados en el servidor.
 
 Esquema previsto:
 
 ```bash
-# 1. Bootstrap del sistema base (paquetes, usuarios, sysctl, hardening SSH)
+# 1. Bootstrap del sistema base (paquetes, cuentas, sysctl, hardening SSH, ufw).
+#    Sin --apply no modifica nada: leé la salida primero.
 sudo ./scripts/bootstrap-server.sh
+sudo ./scripts/bootstrap-server.sh --apply
 
 # 2. Ollama + descarga del modelo
 sudo ./scripts/install-ollama.sh
